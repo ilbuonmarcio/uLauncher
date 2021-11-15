@@ -1,5 +1,6 @@
 import json
-import os
+import multiprocessing
+import FunKiiU
 
 
 def get_db():
@@ -63,11 +64,22 @@ def choose_game_loop(db, region):
             break
 
     print(f"We will start downloading {len(selected_games)} games right now...\n\n")
+    download_processes = []
     for game in selected_games:
-        print(f"Game to download: ({game['titleKey']})", game['name'].replace("\n", ' - '))
-        os.system(f"start cmd.exe /k python FunKiiU.py -title {game['titleID']} -key {game['titleKey']}")
-    
-    print(f"\nAll {len(selected_games)} downloads started concurrently, helper will now exit, have fun!")
+        print(f"Downloading: ({game['titleKey']})", game['name'].replace("\n", ' - '))
+        p = multiprocessing.Process(target=download_worker, args=(game['titleID'], game['titleKey']))
+        p.start()
+        download_processes.append(p)
+
+    print(f"\nAll {len(selected_games)} downloads started concurrently, helper will now wait before decrypting!")
+    print("Wait the script to finish downloading all games, please hang tight...")
+    [p.join() for p in download_processes]
+
+    print("All files downloaded successfully!")
+
+
+def download_worker(title, key):
+    FunKiiU.main(titles=[title], keys=[key])
 
 
 if __name__ == "__main__":
