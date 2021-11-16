@@ -98,7 +98,7 @@ def decrypt_all_encrypted_games():
     decrypt_processes = []
     for path in os.listdir('./install/'):
         print(f"Launching decrypting files at {path}", end="")
-        if os.path.exists(path + 'CDecrypt_v2.0b.exe'):
+        if os.path.isdir(f'./install/{path}/code/'):
             print("-> Game already decrypted, skipping...")
             continue
 
@@ -108,18 +108,18 @@ def decrypt_all_encrypted_games():
         decrypt_processes.append(p)
         print("-> done!")
 
-    print("\nWaiting for decryption of all files to end...\n")
+    print("\nWaiting for decryption of all files to end...")
 
     [p.join() for p in decrypt_processes]
-    print("All games decrypted successfully!\n")
+    print("\n\nAll games decrypted successfully!\n")
 
 
 def decrypt_game(gamepath):
     # Copying decryptor files
-    subprocess.Popen(f"powershell -Command Copy-Item ./CDecrypt_v2.0b.exe, ./libeay32.dll, ./msvcr120d.dll -Destination ./install/{gamepath}/").wait()
+    subprocess.Popen(f"powershell -Command Copy-Item ./decrypt.bat, ./CDecrypt_v2.0b.exe, ./libeay32.dll, ./msvcr120d.dll -Destination ./install/{gamepath}/").wait()
     
     # Running decrypt
-    subprocess.Popen(f"powershell -Command ./install/{gamepath}/CDecrypt_v2.0b.exe ./install/{gamepath}/title.tmd ./install/{gamepath}/title.tik").wait()
+    subprocess.Popen(f"powershell -Command cd ./install/{gamepath}/; ./decrypt.bat").wait()
 
     print(f"Game at path {gamepath} decrypted successfully!")
 
