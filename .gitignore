@@ -1,4 +1,6 @@
 ulauncher/db.json
 ulauncher/FunKiiU.py
 ulauncher/install/
+ulauncher/*.dll
+ulauncher/*.exe
 __pycache__/

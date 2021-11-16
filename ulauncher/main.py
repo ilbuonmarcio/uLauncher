@@ -1,6 +1,9 @@
 import json
 import multiprocessing
+from re import sub
+import subprocess
 import FunKiiU
+import os
 
 
 def get_db():
@@ -54,32 +57,71 @@ def choose_game_loop(db, region):
 
         # Adding them to the download list
         to_download = input("\n\nWrite the ID of which one to download, separated by a comma: ")
-        for i in [int(elem)-1 for elem in to_download.split(',')]:
-            if global_filtered[i]['titleKey'] not in [game['titleKey'] for game in selected_games]:
-                selected_games.append(global_filtered[i])
+        try:
+            for i in [int(elem)-1 for elem in to_download.split(',')]:
+                if global_filtered[i]['titleKey'] not in [game['titleKey'] for game in selected_games]:
+                    selected_games.append(global_filtered[i])
 
-        continue_selecting = input("Games added to the download queue! Do you wanna continue? (y/n) ")
-        if continue_selecting != 'y':
-            print("Let's start downloading, then, shall we? :)\n\n")
-            break
+            continue_selecting = input("Games added to the download queue! Do you wanna continue? (y/n) ")
+            if continue_selecting != 'y':
+                print("Let's start downloading, then, shall we? :)\n\n")
+                break
+        except:
+            print("Error format on ID to download, passing")        
 
-    print(f"We will start downloading {len(selected_games)} games right now...\n\n")
-    download_processes = []
-    for game in selected_games:
-        print(f"Downloading: ({game['titleKey']})", game['name'].replace("\n", ' - '))
-        p = multiprocessing.Process(target=download_worker, args=(game['titleID'], game['titleKey']))
-        p.start()
-        download_processes.append(p)
+    if len(selected_games) > 0:
+        print(f"We will start downloading {len(selected_games)} games right now...\n\n")
+        download_processes = []
+        for game in selected_games:
+            print(f"Downloading: ({game['titleKey']})", game['name'].replace("\n", ' - '))
+            p = multiprocessing.Process(target=download_worker, args=(game['titleID'], game['titleKey']))
+            p.start()
+            download_processes.append(p)
 
-    print(f"\nAll {len(selected_games)} downloads started concurrently, helper will now wait before decrypting!")
-    print("Wait the script to finish downloading all games, please hang tight...")
-    [p.join() for p in download_processes]
+        print(f"\nAll {len(selected_games)} downloads started concurrently, helper will now wait before decrypting!")
+        print("Wait the script to finish downloading all games, please hang tight...")
+        [p.join() for p in download_processes]
 
-    print("All files downloaded successfully!")
+        print("All files downloaded successfully!")
+    else:
+        print("No games to download, skipping this step")
+
+    # Decryption step
+    decrypt_all_encrypted_games()
 
 
 def download_worker(title, key):
     FunKiiU.main(titles=[title], keys=[key])
+
+
+def decrypt_all_encrypted_games():
+    decrypt_processes = []
+    for path in os.listdir('./install/'):
+        print(f"Launching decrypting files at {path}", end="")
+        if os.path.exists(path + 'CDecrypt_v2.0b.exe'):
+            print("-> Game already decrypted, skipping...")
+            continue
+
+        # Decryption step (asynchronous, be sure to avoid memory swap on low end devices!)
+        p = multiprocessing.Process(target=decrypt_game, args=(path,))
+        p.start()
+        decrypt_processes.append(p)
+        print("-> done!")
+
+    print("\nWaiting for decryption of all files to end...\n")
+
+    [p.join() for p in decrypt_processes]
+    print("All games decrypted successfully!\n")
+
+
+def decrypt_game(gamepath):
+    # Copying decryptor files
+    subprocess.Popen(f"powershell -Command Copy-Item ./CDecrypt_v2.0b.exe, ./libeay32.dll, ./msvcr120d.dll -Destination ./install/{gamepath}/").wait()
+    
+    # Running decrypt
+    subprocess.Popen(f"powershell -Command ./install/{gamepath}/CDecrypt_v2.0b.exe ./install/{gamepath}/title.tmd ./install/{gamepath}/title.tik").wait()
+
+    print(f"Game at path {gamepath} decrypted successfully!")
 
 
 if __name__ == "__main__":

@@ -31,7 +31,7 @@ Once you have that, copy it into the `ulauncher/` folder
 
 [FunKiiU](https://github.com/llakssz/FunKiiU): copy FunKiiU.py into the `ulauncher/` folder
 
-[CDecrypt-Release](https://github.com/MisterSirCode/CDecrypt-Release): copy `CDecrypt_v2.0b.exe`, `libeay32.dll` and `msvcr120d.dll` files into the `ulauncher/` folder
+[CDecrypt_v2.0b Project]: copy `CDecrypt_v2.0b.exe`, `libeay32.dll` and `msvcr120d.dll` files into the `ulauncher/` folder
 
 ### How to run
 
