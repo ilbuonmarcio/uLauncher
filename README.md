@@ -1,10 +1,9 @@
 ## uLauncher
 
-Wii U download, decrypt and play helper
+Wii U game download & decrypt helper
 
 - [x] download
-- [ ] decrypt
-- [ ] launch
+- [x] decrypt
 
 ### Requirements
 
