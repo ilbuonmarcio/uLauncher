@@ -96,7 +96,8 @@ def download_worker(title, key):
 
 
 def patch_path(path):
-    path.rename(str(path).replace(" ", ""))
+    if str(path) != str(path).replace(" ", ""):
+        path.rename(str(path).replace(" ", ""))
 
 
 def decrypt_all_encrypted_games():
