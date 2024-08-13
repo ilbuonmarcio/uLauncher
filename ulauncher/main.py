@@ -99,14 +99,13 @@ def patch_path(path):
     if str(path) != str(path).replace(" ", ""):
         path.rename(str(path).replace(" ", ""))
 
+    return str(path).replace(" ", "")
+
 
 def decrypt_all_encrypted_games():
     decrypt_processes = []
     for path in Path('./install/').iterdir():
-        patch_path(path)
-
-    for path in Path('./install/').iterdir():
-        patch_path(path)
+        path = patch_path(path)
         print(f"Launching decrypting files at {path}", end="")
 
         # Decryption step (asynchronous, be sure to avoid memory swap on low end devices!)
@@ -122,11 +121,8 @@ def decrypt_all_encrypted_games():
 
 
 def decrypt_game(gamepath):
-    # Copying decryptor files
-    subprocess.Popen(f"powershell -Command Copy-Item ./decrypt.bat, ./CDecrypt_v2.0b.exe, ./libeay32.dll, ./msvcr120d.dll -Destination {gamepath}/").wait()
-    
     # Running decrypt
-    subprocess.Popen(f"powershell -Command cd {gamepath}/; ./decrypt.bat").wait()
+    subprocess.Popen(f"./cdecrypt {gamepath}", shell=True).wait()
 
     print(f"Game at path {gamepath} decrypted successfully!")
 

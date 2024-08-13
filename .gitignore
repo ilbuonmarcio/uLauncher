@@ -3,4 +3,5 @@ ulauncher/FunKiiU.py
 ulauncher/install/
 ulauncher/*.dll
 ulauncher/*.exe
+ulauncher/cdecrypt
 __pycache__/
