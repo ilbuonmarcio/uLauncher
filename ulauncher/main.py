@@ -122,7 +122,7 @@ def decrypt_all_encrypted_games():
 
 def decrypt_game(gamepath):
     # Running decrypt
-    subprocess.Popen(f"./cdecrypt {gamepath}", shell=True).wait()
+    subprocess.Popen(f"cdecrypt {gamepath}", shell=True).wait()
 
     print(f"Game at path {gamepath} decrypted successfully!")
 
